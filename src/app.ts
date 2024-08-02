@@ -9,14 +9,16 @@ export const pdf = async (c: Context) => {
   doc.text(name);
   doc.end();
 
-  c.header("Content-Disposition", 'inline; filename="my-custom-filename.pdf"')
-
+  
   const buffer = await new Promise<Buffer>((resolve, reject) => {
     const chunks: Uint8Array[] = [];
     doc.on("data", (chunk) => chunks.push(chunk));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
   });
+
+  c.header("Content-Disposition", 'inline; filename="my-custom-filename.pdf"')
+  c.header("Content-Type", "application/pdf");
   
   return c.body(buffer);
 };
